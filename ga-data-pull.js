@@ -7,6 +7,11 @@
 Extended by Jithesh Ambalapad jithesh.ap@gmail.com
 */
 
+/* 
+Enable Analytics API from Resources -> Advanced Google Services and then make sure to click on the google developer console link to enable analytics api for this project
+
+*/
+
 /**
  * The name of the configration sheet.
  * And various parameters.
@@ -17,7 +22,7 @@ var VALUE = 'value';
 var TYPE = 'type';
 var SHEET_NAME = 'sheet-name';
 var moment = Moment.load();
-
+/* Add Moment library by going to Resources -> Libraries in script editor and using this key - MHMchiX6c1bwSqGM1PZiW_PxhMjh3Sh48 */
 var CORE_OPT_PARAM_NAMES = [
   'dimensions',
   'sort',
@@ -303,6 +308,9 @@ function createGaReport_(reportType) {
   }
 
   config.push([SHEET_NAME, '']);
+  config.push(['cell-row', '']);
+  config.push(['cell-column', '']);
+  config.push(['Note:- Quarterly/Yearly is not possible, so always use daily or monthly and consolidate for needs \n(will have bit mismatch with unique users otherwise rest would be fine), \nthis is done to avoid sampling of data when retrieved from GA', '']);
   sheet.getRange(1, sheet.getLastColumn() + 1, config.length, 2).setValues(config);
 }
 
@@ -349,7 +357,7 @@ function getData(e) {
   var columnOutput = {};
   //row.count = 1;
   //Sampled-data value initialization
-
+  var isSampled = '';
   var sheet = getOrCreateGaSheet_();
   var configs = getConfigs_(sheet);
 
@@ -362,48 +370,56 @@ function getData(e) {
     for (var i = 0, config; config = configs[i]; ++i) {
       var configName = config[NAME];
       //log_('cell-row value ' + config['cell-row']);
-      //log_('cell-col value ' + config['cell-column']);
-            var Actualstartdate = moment(config['start-date']); //todays date
-            var Actualenddate = moment(config['end-date']); // another date
+      //log_('end date value ' + config['end-date']);
+            var Actualstartdate = moment(config['start-date']); 
+            var Actualenddate = moment(config['end-date']); 
             var duration = moment.duration(Actualenddate.diff(Actualstartdate));
             //var months = Actualenddate.diff(Actualstartdate, 'months');
             var duration = duration.asMonths();
             months = duration;
-        log_('months value ' + months);   
-        //log_('duration value ' + duration);  
+        //log_('months value ' + months);   
+        //log_('Actual enddate value value ' + Actualenddate.format('MM/DD/YYYY HH:mm Z'));  
         //log_('what is the value of date in config[start-date] before looping ' + config['start-date']);
         //log_('what is the value of date in config[end-date] before looping  ' + config['end-date']);
         //startdate = moment(startdate).add(2, 'M');
         //log_('adding 2 month to start date ' + startdate.add(4,'M').format('YYYY MM DD'));
         //log_('typof cell-row ' + typeof(config['cell-row']));
           if (typeof(config['cell-row']) != 'undefined') {
-            row.count = config['cell-row'];
+            row.count = config['cell-row'] + 3;
+            row.originalCount = config['cell-row'];
           } else {
-            row.count = 1;
+            row.count = 1 + 3;
+            row.originalCount = 1;
           }
           if (typeof(config['cell-column']) != 'undefined') {
             columnOutput.count = config['cell-column'];
+            columnOutput.originalCount = config['cell-column'];
           } else {
             columnOutput.count = 1;
+            columnOutput.originalCount = 1;
           }
           
       for (var m = 0; months >= 0; ++m) {
-          log_('in for loop, months value ' + months);
+          ///log_('in for loop, months value ' + months);
         if ( months >=3 ) {
           config['end-date'] = moment(config['start-date']).add(2,'M').endOf('month').format('YYYY-MM-DD');
         } else {
           config['end-date'] = Actualenddate.format('YYYY-MM-DD');
         }
-        log_('what is the value of date in config[start-date] in looping ' + config['start-date']);
-        log_('what is the value of date in config[end-date] in looping  ' + config['end-date']);
+        //log_('what is the value of date in config[start-date] in looping ' + config['start-date']);
+        //log_('what is the value of date in config[end-date] in looping  ' + config['end-date']);
 
           try {
             log_('Executing query: ' + configName);
             var results = getResults_(config);
 
-            log_('sampled data value ' + results.getContainsSampledData());
+            //log_('sampled data value ' + results.getContainsSampledData());
 
-            if ()
+            if (results.getContainsSampledData() != false) {
+              isSampled = 'TRUE';
+            } else {
+              isSampled = 'FALSE';
+            }
 
             log_('Success. Writing results.');
             displayResults_(results, config, row, columnOutput,m);
@@ -415,6 +431,15 @@ function getData(e) {
           config['start-date'] = moment(config['end-date']).add(1,'d').format('YYYY-MM-DD');
           months = moment.duration(Actualenddate.diff(moment(config['start-date'])));
           months = months.asMonths();
+          if (months <= 0) {
+
+            var activeSheet_execResults = getOutputSheet_(config[SHEET_NAME]);
+            activeSheet_execResults.getRange(row.originalCount, columnOutput.originalCount, 3, 2).setValues([
+                ['Results for Query', config[NAME]],
+                ['Date executed', moment().format('MM/DD/YYYY HH:mm Z')],
+                ['Contains Sampled Data', isSampled]
+            ]);
+          }
           //log_('new month value at end of for ' + months);
 
       }
@@ -646,7 +671,7 @@ function displayResults_(results, config, row, columnOutput,m) {
   
   var activeSheet = getOutputSheet_(config[SHEET_NAME]);
   if (m == 0) {
-    activeSheet.clear().setColumnWidth(1, 200);
+    //activeSheet.clear().setColumnWidth(1, 200);
     //outputResultInfo_(results, activeSheet, row, config[NAME]); 
     //outputTotalsForAllResults_(results, activeSheet, row)
     outputHeaders_(results, activeSheet, row, columnOutput);
