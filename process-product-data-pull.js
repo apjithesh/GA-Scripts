@@ -115,7 +115,7 @@ function getProductpullConfigs () {
   return config;
 }
 
-function getData () {
+function getProductSignupData () {
 // Gets data from other files that has the product data and populate into this sheet
   var config = getProductpullConfigs();
   var moment = Moment.load();
