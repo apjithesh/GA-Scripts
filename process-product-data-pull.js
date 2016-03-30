@@ -134,31 +134,47 @@ function getProductSignupData () {
         var url = file.getUrl();
         var fileId = file.getId();
         var filecreateDate = file.getDateCreated();
-      }
-       if ((moment().diff(filecreateDate,"hours")) > 8) {
-         file.setTrashed(true);
-       } else {
-         var source_sheet = SpreadsheetApp.openById(fileId);
-         source_sheet = source_sheet.getSheetByName(config['sourceSheetName-' + regions[i]]);
-         var source_range = source_sheet.getDataRange(); //getRange("A:ZZ");
-         var A1Range = source_range.getA1Notation();
-         //get the data values in range
-         var SData = source_range.getValues();
-         var target = SpreadsheetApp.openById(config['target-sheetID'])//getActiveSpreadsheet();
-         var target_sheets = target.getSheets();
-         //Browser.msgBox("Sheets are # " + target_sheets);
-         var target_sheet = target.getSheetByName(config['targetSheetName-' + regions[i]]);
-         if (!target_sheet) {
-           target_sheet = target.insertSheet(config['targetSheetName-' + regions[i]], target_sheets.length + 1);
-         }
-         target_sheet.getRange(A1Range).setValues(SData);
+        
+         if ((moment().diff(filecreateDate,"hours")) < 1) {
+        
+          //Browser.msgBox("Got into else and file createdate is " + filecreateDate);
+          var source_sheet = SpreadsheetApp.openById(fileId);
+          source_sheet = source_sheet.getSheetByName(config['sourceSheetName-' + regions[i]]);
+          var source_range = source_sheet.getDataRange(); //getRange("A:ZZ");
+          var A1Range = source_range.getA1Notation();
+          //get the data values in range
+          var SData = source_range.getValues();
+          var target = SpreadsheetApp.openById(config['target-sheetID'])//getActiveSpreadsheet();
+          var target_sheets = target.getSheets();
+          //Browser.msgBox("Sheets are # " + target_sheets);
+          var target_sheet = target.getSheetByName(config['targetSheetName-' + regions[i]]);
+          if (!target_sheet) {
+            target_sheet = target.insertSheet(config['targetSheetName-' + regions[i]], target_sheets.length + 1);
+          }
+          target_sheet.getRange(A1Range).setValues(SData);
+        
+        }
       }
 
     }
     
   }
   
-  
-  
+  var filestoDelete = DriveApp.getFolderById(config['folder-id-for-spreadsheet-data']).searchFiles("title contains 'product-signup'");
+
+  while (filestoDelete.hasNext()) {
+        var file = filestoDelete.next();
+        
+        var name = file.getName();
+        var type = file.getMimeType();
+        var url = file.getUrl();
+        var fileId = file.getId();
+        var filecreateDate = file.getDateCreated();
+    //Browser.msgBox("Time diff " + moment().diff(filecreateDate,"hours"));
+      if ((moment().diff(filecreateDate,"hours")) >= 1) {
+          file.setTrashed(true);
+        }
+  }
+  MailApp.sendEmail("jithesh@sumologic.com", "Google Script for Extracting product data", "The Script has completed at " + moment().format('YYYY-MM-DD H:mm'));
 }
 
