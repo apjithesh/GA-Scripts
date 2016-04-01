@@ -135,7 +135,7 @@ function getProductSignupData () {
         var fileId = file.getId();
         var filecreateDate = file.getDateCreated();
         
-         if ((moment().diff(filecreateDate,"hours")) < 1) {
+         if ((moment().diff(filecreateDate,"hours")) <= 8) {
         
           //Browser.msgBox("Got into else and file createdate is " + filecreateDate);
           var source_sheet = SpreadsheetApp.openById(fileId);
@@ -151,6 +151,7 @@ function getProductSignupData () {
           if (!target_sheet) {
             target_sheet = target.insertSheet(config['targetSheetName-' + regions[i]], target_sheets.length + 1);
           }
+          target_sheet.clear();
           target_sheet.getRange(A1Range).setValues(SData);
         
         }
@@ -171,10 +172,9 @@ function getProductSignupData () {
         var fileId = file.getId();
         var filecreateDate = file.getDateCreated();
     //Browser.msgBox("Time diff " + moment().diff(filecreateDate,"hours"));
-      if ((moment().diff(filecreateDate,"hours")) >= 1) {
+      if ((moment().diff(filecreateDate,"hours")) > 8) {
           file.setTrashed(true);
         }
   }
   MailApp.sendEmail("jithesh@sumologic.com", "Google Script for Extracting product data", "The Script has completed at " + moment().format('YYYY-MM-DD H:mm'));
 }
-
