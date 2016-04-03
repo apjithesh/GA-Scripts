@@ -7,11 +7,6 @@
 Extended by Jithesh Ambalapad jithesh.ap@gmail.com
 */
 
-/* 
-Enable Analytics API from Resources -> Advanced Google Services and then make sure to click on the google developer console link to enable analytics api for this project
-
-*/
-
 /**
  * The name of the configration sheet.
  * And various parameters.
@@ -22,7 +17,7 @@ var VALUE = 'value';
 var TYPE = 'type';
 var SHEET_NAME = 'sheet-name';
 var moment = Moment.load();
-/* Add Moment library by going to Resources -> Libraries in script editor and using this key - MHMchiX6c1bwSqGM1PZiW_PxhMjh3Sh48 */
+
 var CORE_OPT_PARAM_NAMES = [
   'dimensions',
   'sort',
@@ -942,4 +937,16 @@ function displayLog_() {
   panel.add(txtOutput);
   
   SpreadsheetApp.getActiveSpreadsheet().show(uiLog); 
+}
+
+function getWeekEnd(weekNum, yearNum) {
+  //var weekNum = 10;
+var moment = Moment.load();
+  //var startDate = moment().format("MM-DD-YYYY");
+ // var startDate = moment().startOf('week').week(weekNum).format("MM-DD-YYYY");
+  // var startDate = moment().year('2016').week(weekNum).format("DD-MM-YYYY");
+  //var startDate = moment().day("Sunday").year(yearNum).week(weekNum).toDate();
+  var startDate = moment().year(yearNum).week(weekNum).endOf("week").format("MM-DD-YYYY"); //works to get end of the week
+  //Browser.msgBox(startDate);
+  return startDate;
 }
