@@ -11,11 +11,16 @@ Extended by Jithesh Ambalapad jithesh.ap@gmail.com
  * The name of the configration sheet.
  * And various parameters.
  */
+
+/** Enable the Analytics service by going to Resources -> Advanced Google Services and then in that window click on google developers console to enable Analytics API for this project
+
+*/
 var GA_CONFIG = 'gaconfig';
 var NAME = 'query';
 var VALUE = 'value';
 var TYPE = 'type';
 var SHEET_NAME = 'sheet-name';
+/* Add Moment library by going to Resources -> Libraries in script editor and using this key - MHMchiX6c1bwSqGM1PZiW_PxhMjh3Sh48 */
 var moment = Moment.load();
 
 var CORE_OPT_PARAM_NAMES = [
