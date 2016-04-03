@@ -178,3 +178,4 @@ function getProductSignupData () {
   }
   MailApp.sendEmail("jithesh@sumologic.com", "Google Script for Extracting product data", "The Script has completed at " + moment().format('YYYY-MM-DD H:mm'));
 }
+
