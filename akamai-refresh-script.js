@@ -70,11 +70,11 @@ function URLToRefresh () {
   //Browser.msgBox("URLslist is " + URLSList + " and lengths is " + URLSList.length + " URLs is " + URLs + " and length is " + URLs.length);
     for (i=0; i< URLSList.length; i++){
     if (URLForPayload.length > 0) {
-      if (URLSList[i] != "" && i != (URLSList.length - 1)) { URLForPayload = URLForPayload + ',' + URLSList[i]; }
+      if (URLSList[i] != "" && i != (URLSList.length - 1)) { URLForPayload = URLForPayload + ',' + URLSList[i].trim(); }
     } else {
        // Browser.msgBox(URLSList[i]);
 
-      if (URLSList[i] != "") { URLForPayload = URLSList[i]; }
+      if (URLSList[i] != "") { URLForPayload = URLSList[i].trim(); }
     }
     
     //URLObject = URLObject + ',\n"' + URLS[i] + '"';
